@@ -9,7 +9,7 @@ import { createNotification } from '../services/notification.service';
  * POST /sendNotification
  * Body: NotificationRequest
  */
-export const sendNotification = functions.https.onRequest(async (req: Request, res: Response) => {
+export const notificationSendPush = functions.https.onRequest(async (req: Request, res: Response) => {
   // Only allow POST requests
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed. Use POST.' });

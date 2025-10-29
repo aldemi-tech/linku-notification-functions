@@ -9,7 +9,7 @@ import { sendFCMNotification, sendFCMNotificationToMultiple } from '../services/
  * Firestore Trigger Cloud Function
  * Listens to new documents in the notifications collection and sends FCM messages
  */
-export const onNotificationCreated = functions.firestore
+export const notificationOnCreated = functions.firestore
   .document('notifications/{notificationId}')
   .onCreate(async (snapshot: QueryDocumentSnapshot, context: EventContext) => {
     const notificationId = context.params.notificationId;

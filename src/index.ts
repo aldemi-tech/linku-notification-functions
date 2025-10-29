@@ -3,5 +3,5 @@
  * Exports all cloud functions
  */
 
-export { sendNotification } from './functions/http.function';
-export { onNotificationCreated } from './functions/trigger.function';
+export { notificationSendPush } from './functions/http.function';
+export { notificationOnCreated } from './functions/trigger.function';
