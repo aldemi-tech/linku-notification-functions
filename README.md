@@ -28,14 +28,15 @@ users (collection)
             ├── newRequests: boolean
             ├── payments: boolean
             ├── promotions: boolean
-            └── statusUpdates: boolean
+            ├── statusUpdates: boolean
+            └── system: boolean
 ```
 
 ## Notification Data Structure
 
 ```typescript
 {
-  type?: string;          // Notification type: 'messages', 'newRequests', 'payments', 'promotions', 'statusUpdates'
+  type?: string;          // Notification type: 'messages', 'newRequests', 'payments', 'promotions', 'statusUpdates', 'system'
                           // Defaults to 'promotions' if not provided
   priority: string;       // Priority level ('high', 'normal', 'low')
   title: string;          // Notification title
@@ -53,13 +54,14 @@ users (collection)
 
 ## Notification Types & User Preferences
 
-The system supports 5 types of notifications that can be individually controlled by users:
+The system supports 6 types of notifications that can be individually controlled by users:
 
 - **`messages`**: Chat messages and direct communications
 - **`newRequests`**: New booking or service requests
 - **`payments`**: Payment confirmations and receipts
 - **`promotions`**: Marketing and promotional content (default type if not specified)
 - **`statusUpdates`**: Status changes and updates
+- **`system`**: System notifications, maintenance alerts, and critical app updates
 
 Users can control which types of notifications they receive through the `users/{userId}/preferences/notifications` document. If no preferences are set, all notifications are allowed by default.
 

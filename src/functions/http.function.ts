@@ -33,7 +33,7 @@ export const notificationSendPush = functions.https.onRequest(async (req: Reques
     }
 
     // Validate notification type
-    const validTypes = ['messages', 'newRequests', 'payments', 'promotions', 'statusUpdates'];
+    const validTypes = ['messages', 'newRequests', 'payments', 'promotions', 'statusUpdates', 'system'];
     if (!validTypes.includes(notificationData.type)) {
       res.status(400).json({ 
         error: `Invalid notification type. Must be one of: ${validTypes.join(', ')}` 

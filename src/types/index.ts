@@ -7,7 +7,7 @@ export interface NotificationAction {
   value: string;   // Action value: URL, route, identifier, etc.
 }
 
-export type NotificationType = 'messages' | 'newRequests' | 'payments' | 'promotions' | 'statusUpdates';
+export type NotificationType = 'messages' | 'newRequests' | 'payments' | 'promotions' | 'statusUpdates' | 'system';
 
 export interface NotificationRequest {
   type?: NotificationType;   // Notification type (defaults to 'promotions' if not provided)
@@ -54,4 +54,5 @@ export interface NotificationPreferences {
   payments: boolean;
   promotions: boolean;
   statusUpdates: boolean;
+  system: boolean;
 }
