@@ -2,6 +2,8 @@
 
 Firebase Cloud Functions for sending FCM (Firebase Cloud Messaging) push notifications.
 
+[![Deploy Status](https://github.com/aldemi-tech/linku-notification-functions/actions/workflows/deploy.yml/badge.svg)](https://github.com/aldemi-tech/linku-notification-functions/actions/workflows/deploy.yml)
+
 ## Architecture
 
 This project implements two main cloud functions:
