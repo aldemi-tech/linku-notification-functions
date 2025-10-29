@@ -19,21 +19,31 @@ export const notificationSendPush = functions.https.onRequest(async (req: Reques
   try {
     const notificationData = req.body as NotificationRequest;
 
+    // Set default notification type to 'promotions' if not provided
+    if (!notificationData.type) {
+      notificationData.type = 'promotions';
+    }
+
     // Validate required fields
-    if (!notificationData.type || !notificationData.title || 
-        !notificationData.message || !notificationData.user_id) {
+    if (!notificationData.title || !notificationData.message || !notificationData.user_id) {
       res.status(400).json({ 
-        error: 'Missing required fields: type, title, message, user_id' 
+        error: 'Missing required fields: title, message, user_id' 
+      });
+      return;
+    }
+
+    // Validate notification type
+    const validTypes = ['messages', 'newRequests', 'payments', 'promotions', 'statusUpdates'];
+    if (!validTypes.includes(notificationData.type)) {
+      res.status(400).json({ 
+        error: `Invalid notification type. Must be one of: ${validTypes.join(', ')}` 
       });
       return;
     }
 
     // Validate priority
-    if (!['high', 'normal', 'low'].includes(notificationData.priority)) {
-      res.status(400).json({ 
-        error: 'Invalid priority. Must be: high, normal, or low' 
-      });
-      return;
+    if (!notificationData.priority || !['high', 'normal', 'low'].includes(notificationData.priority)) {
+      notificationData.priority = 'normal'; // Default to normal if not provided
     }
 
     // Create notification document in Firestore

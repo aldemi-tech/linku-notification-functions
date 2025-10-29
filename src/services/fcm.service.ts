@@ -17,7 +17,7 @@ export const sendFCMNotification = async (
       body: notification.message,
     },
     data: {
-      type: notification.type,
+      type: notification.type || 'promotions',
       priority: notification.priority,
       ...(notification.content_html && { content_html: notification.content_html }),
       ...(notification.action && {
@@ -55,7 +55,7 @@ export const sendFCMNotificationToMultiple = async (
       body: notification.message,
     },
     data: {
-      type: notification.type,
+      type: notification.type || 'promotions',
       priority: notification.priority,
       ...(notification.content_html && { content_html: notification.content_html }),
       ...(notification.action && {

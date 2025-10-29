@@ -11,11 +11,32 @@ This project implements two main cloud functions:
 1. **HTTP Endpoint** (`sendNotification`): Receives notification requests and saves them to Firestore
 2. **Firestore Trigger** (`onNotificationCreated`): Listens to new documents in the notifications collection and sends FCM messages
 
+### Firestore Structure
+
+```
+users (collection)
+└── {userId} (document)
+    ├── fcm_tokens (subcollection)
+    │   └── {tokenId} (document)
+    │       ├── token: string
+    │       ├── created_at: timestamp
+    │       ├── updated_at: timestamp
+    │       └── device_info?: object
+    └── preferences (subcollection)
+        └── notifications (document)
+            ├── messages: boolean
+            ├── newRequests: boolean
+            ├── payments: boolean
+            ├── promotions: boolean
+            └── statusUpdates: boolean
+```
+
 ## Notification Data Structure
 
 ```typescript
 {
-  type: string;           // Notification type (e.g., 'payment', 'booking', 'alert')
+  type?: string;          // Notification type: 'messages', 'newRequests', 'payments', 'promotions', 'statusUpdates'
+                          // Defaults to 'promotions' if not provided
   priority: string;       // Priority level ('high', 'normal', 'low')
   title: string;          // Notification title
   message: string;        // Notification message body
@@ -25,10 +46,22 @@ This project implements two main cloud functions:
     value: string;        // Action value (URL, route, etc.)
   };
   user_id: string;        // Target user ID
-  fcm_token?: string;     // Optional specific FCM token
+  fcm_token?: string;     // Optional specific FCM token (if not provided, fetched from user's fcm_tokens subcollection)
   scheduled_at?: Date;    // Optional scheduled send time
 }
 ```
+
+## Notification Types & User Preferences
+
+The system supports 5 types of notifications that can be individually controlled by users:
+
+- **`messages`**: Chat messages and direct communications
+- **`newRequests`**: New booking or service requests
+- **`payments`**: Payment confirmations and receipts
+- **`promotions`**: Marketing and promotional content (default type if not specified)
+- **`statusUpdates`**: Status changes and updates
+
+Users can control which types of notifications they receive through the `users/{userId}/preferences/notifications` document. If no preferences are set, all notifications are allowed by default.
 
 ## Setup
 

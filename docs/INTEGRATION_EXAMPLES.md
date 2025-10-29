@@ -44,17 +44,52 @@ async function getFCMToken() {
 }
 
 // Save token to user profile
-async function saveTokenToFirestore(token: string) {
+async function saveTokenToFirestore(token: string, deviceInfo?: any) {
+  const userId = 'current-user-id'; // Get from auth
+  
+  // Save token to fcm_tokens subcollection
+  await firestore()
+    .collection('users')
+    .doc(userId)
+    .collection('fcm_tokens')
+    .add({
+      token: token,
+      created_at: firestore.FieldValue.serverTimestamp(),
+      updated_at: firestore.FieldValue.serverTimestamp(),
+      device_info: {
+        platform: Platform.OS,
+        device_id: deviceInfo?.deviceId,
+        app_version: deviceInfo?.appVersion,
+      }
+    });
+}
+
+// Set user notification preferences
+async function setNotificationPreferences(preferences: {
+  messages?: boolean;
+  newRequests?: boolean;
+  payments?: boolean;
+  promotions?: boolean;
+  statusUpdates?: boolean;
+}) {
   const userId = 'current-user-id'; // Get from auth
   
   await firestore()
     .collection('users')
     .doc(userId)
-    .set({
-      fcm_token: token,
-      notification_enabled: true,
-    }, { merge: true });
+    .collection('preferences')
+    .doc('notifications')
+    .set(preferences, { merge: true });
 }
+
+// Example: Allow all notifications except promotions
+await setNotificationPreferences({
+  messages: true,
+  newRequests: true,
+  payments: true,
+  promotions: false,  // Disable promotional notifications
+  statusUpdates: true,
+});
 ```
 
 ### Handle Incoming Notifications
@@ -135,7 +170,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 
 ```typescript
 interface SendNotificationRequest {
-  type: string;
+  type?: 'messages' | 'newRequests' | 'payments' | 'promotions' | 'statusUpdates';  // Optional, defaults to 'promotions'
   priority: 'high' | 'normal' | 'low';
   title: string;
   message: string;
@@ -189,7 +224,7 @@ const client = new NotificationClient(
 
 // Send payment notification
 await client.sendNotification({
-  type: 'payment',
+  type: 'payments',
   priority: 'high',
   title: 'Payment Successful',
   message: 'Your payment of $100 was processed',
@@ -211,7 +246,7 @@ await client.sendNotification({
 
 ```typescript
 await client.sendNotification({
-  type: 'payment_success',
+  type: 'payments',
   priority: 'high',
   title: 'Payment Received',
   message: `Your payment of $${amount} was successful`,
@@ -239,7 +274,7 @@ await client.sendNotification({
 
 ```typescript
 await client.sendNotification({
-  type: 'booking_reminder',
+  type: 'newRequests',
   priority: 'normal',
   title: 'Upcoming Appointment',
   message: 'Your appointment is in 1 hour',
@@ -260,7 +295,7 @@ await client.sendNotification({
 
 ```typescript
 await client.sendNotification({
-  type: 'chat_message',
+  type: 'messages',
   priority: 'high',
   title: `New message from ${senderName}`,
   message: messagePreview,

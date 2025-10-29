@@ -2,7 +2,12 @@ import * as functions from 'firebase-functions';
 import { QueryDocumentSnapshot } from 'firebase-functions/v1/firestore';
 import { EventContext } from 'firebase-functions';
 import { NotificationDocument } from '../types';
-import { getUserFCMTokens, updateNotificationStatus, incrementNotificationAttempts } from '../services/notification.service';
+import { 
+  getUserFCMTokens, 
+  updateNotificationStatus, 
+  incrementNotificationAttempts,
+  canSendNotification 
+} from '../services/notification.service';
 import { sendFCMNotification, sendFCMNotificationToMultiple } from '../services/fcm.service';
 
 /**
@@ -25,6 +30,23 @@ export const notificationOnCreated = functions.firestore
       // Skip if already sent or failed
       if (notification.status === 'sent' || notification.status === 'failed') {
         console.log(`Notification ${notificationId} already processed with status: ${notification.status}`);
+        return;
+      }
+
+      // Set default type to 'promotions' if not provided
+      const notificationType = notification.type || 'promotions';
+
+      // Check if user allows this type of notification
+      const canSend = await canSendNotification(notification.user_id, notificationType);
+      if (!canSend) {
+        console.log(
+          `User ${notification.user_id} has disabled notifications of type: ${notificationType}`
+        );
+        await updateNotificationStatus(
+          notificationId,
+          'failed',
+          `User has disabled ${notificationType} notifications`
+        );
         return;
       }
 
