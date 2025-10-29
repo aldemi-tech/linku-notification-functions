@@ -1,7 +1,11 @@
 # Compiled JavaScript files
 lib/
-*.js
-*.js.map
+lib/**/*.js
+lib/**/*.js.map
+
+# Allow configuration files
+!*.config.js
+!.eslintrc.js
 
 # TypeScript cache
 *.tsbuildinfo
